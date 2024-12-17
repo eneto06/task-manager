@@ -14,7 +14,6 @@ import task_manager.repository.TaskRepository;
 @Service
 public class TaskService {
 
-
     public Task registerTask(Task task) {
         return taskRepository.save(task);
     }
@@ -31,8 +30,12 @@ public class TaskService {
         return taskRepository.findById(id);
     }
 
+    public List<Task> findTaskByUserId(Long userId) {
+        return taskRepository.findByUserId(userId);
+    }
+
     public void deleteTask(Long id) {
-         taskRepository.deleteById(id);
+        taskRepository.deleteById(id);
     }
 
     @Autowired

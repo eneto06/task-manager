@@ -37,9 +37,15 @@ public class TaskController {
         return ResponseEntity.ok().body(taskService.listTasks());
     }
 
-    @GetMapping({"/list"})
+    @GetMapping({"/listPageable"})
     public ResponseEntity<Page<Task>> listRegisteredTasksByPagination(Pageable pageable) {
         return ResponseEntity.ok().body(taskService.listTasks(pageable));
+    }
+
+    @GetMapping({"/{userId}/ tasks"})
+    public ResponseEntity<List<Task>> listTaskByUserId(@PathVariable Long userId) {
+        List<Task> tasks = taskService.findTaskByUserId(userId);
+        return tasks != null ? ResponseEntity.ok(tasks) : ResponseEntity.notFound().build();
     }
 
     @GetMapping("/{id}")
