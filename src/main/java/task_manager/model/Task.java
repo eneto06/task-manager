@@ -33,6 +33,6 @@ public class Task {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private User use
+    private User user;
 
 }
