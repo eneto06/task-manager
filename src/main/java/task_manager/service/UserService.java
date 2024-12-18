@@ -6,24 +6,36 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import task_manager.dto.UserDto;
 import task_manager.model.User;
 import task_manager.repository.UserRepository;
 
 @Service
 public class UserService {
 
-    public User registerUser(User user) {
-        return userRepository.save(user);
+    public UserDto registerUser(User user) {
+        return userRepository.save(user).converterParaDto();
     }
 
-    public List<User> listUsers() {
-        return userRepository.findAll();
+    public List<UserDto> listUsers() {
+        return userRepository.findAll()
+        .stream()
+        .map(usuario -> usuario.converterParaDto())
+        .toList();
     }
 
     
 
-    public Optional<User> findUsersById(Long id) {
-        return userRepository.findById(id);
+    public UserDto findUsersById(Long id) {
+        Optional<User> userOpt = userRepository.findById(id);
+
+        if (userOpt.isEmpty()) {
+            return null;
+        }
+
+        User user = userOpt.get();
+        
+        return user.converterParaDto();
     }
 
     public void deleteUser(Long id) {

@@ -1,6 +1,7 @@
 package task_manager.controller;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import task_manager.dto.UserDto;
 import task_manager.model.User;
 import task_manager.service.UserService;
 
@@ -26,31 +28,31 @@ public class UserController {
     private UserService userService;
 
     @PostMapping
-    public ResponseEntity<User> registerNewUser(@RequestBody User user) {
+    public ResponseEntity<UserDto> registerNewUser(@RequestBody User user) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.registerUser(user));
     }
 
     @GetMapping("/list")
-    public ResponseEntity<List<User>> listRegisteredUsers() {
+    public ResponseEntity<List<UserDto>> listRegisteredUsers() {
         return ResponseEntity.ok().body(userService.listUsers());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> searchUsers(@PathVariable Long id) {
-        Optional<User> user = userService.findUsersById(id);
+    public ResponseEntity<UserDto> searchUsers(@PathVariable Long id) {
+        UserDto user = userService.findUsersById(id);
 
-        if (user.isEmpty()) {
+        if (Objects.isNull(user)) {
             return ResponseEntity.notFound().build();
         }
 
-        return ResponseEntity.ok().body(user.get());
+        return ResponseEntity.ok().body(user);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        Optional<User> user = userService.findUsersById(id);
+        UserDto user = userService.findUsersById(id);
 
-        if (user.isEmpty()) {
+        if (Objects.isNull(user)) {
             return ResponseEntity.notFound().build();
         }
 
@@ -61,10 +63,10 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
-        Optional<User> userOpt = userService.findUsersById(id);
+    public ResponseEntity<UserDto> updateUser(@PathVariable Long id, @RequestBody User user) {
+        UserDto userOpt = userService.findUsersById(id);
 
-        if (userOpt.isEmpty()) {
+        if (Objects.isNull(userOpt)) {
             return ResponseEntity.notFound().build();
         }
 
