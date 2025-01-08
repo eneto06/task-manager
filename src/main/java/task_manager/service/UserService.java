@@ -36,28 +36,64 @@ public class UserService {
 
     public List<UserDto> listUsers() {
         return userRepository.findAll()
-        .stream()
-        .map(usuario -> usuario.toDto())
-        .toList();
+                .stream()
+                .map(usuario -> usuario.toDto())
+                .toList();
     }
 
     public UserDto findUsersById(Long id) {
         Optional<User> userOpt = userRepository.findById(id);
 
-        if (userOpt.isEmpty()) {
-            return null;
+        if (userOpt.isPresent()) {
+            return userOpt.get().toDto();
         }
 
-        User user = userOpt.get();
-        
-        return user.toDto();
+        return null;
+    }
+
+    public List<UserDto> filterUserByName(String name) {
+        List<User> users = userRepository.findByNameContains(name);
+
+        return users.stream().map(User::toDto).toList();
+    }
+
+    public List<UserDto> filterUserByNameStartingWith(String name) {
+        List<User> users = userRepository.findByNameLike(name + "%");
+
+        return users.stream().map(User::toDto).toList();
+    }
+
+    public UserDto filterUserByCpf(String cpf) {
+        Optional<User> userOpt = userRepository.findByCpf(cpf);
+
+        if (userOpt.isPresent()) {
+            return userOpt.get().toDto();
+        }
+
+        return null;
     }
 
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
     }
 
-   
-   
+    public User updateUser(Long id, User dataUser) {
+        Optional<User> userOpt = userRepository.findById(id);
 
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+
+            user.setName(dataUser.getName());
+            user.setCpf(dataUser.getCpf());
+            user.setDataNascimento(dataUser.getDataNascimento());
+            user.setEmail(dataUser.getEmail());
+            user.setPassword(dataUser.getPassword());
+            user.setStatus(dataUser.getStatus());
+
+            return userRepository.save(user);
+        }
+
+        return null;
+
+    }
 }
