@@ -6,7 +6,6 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -48,10 +47,10 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserStatus userStatus;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Task> tasks;
 
-    public UserDto converterParaDto() {
+    public UserDto converterParaDto() 
+    
+    {
 
         UserDto dto = new UserDto();
 
@@ -76,5 +75,6 @@ public class User {
     
     @OneToMany
     private List<Project> projects;
+
 
 }
