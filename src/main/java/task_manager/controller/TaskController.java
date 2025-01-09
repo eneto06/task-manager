@@ -1,11 +1,8 @@
 package task_manager.controller;
 
 import java.util.List;
-import java.util.Optional;
-
+import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import task_manager.dto.TaskDto;
 import task_manager.model.Task;
 import task_manager.service.TaskService;
 
@@ -32,57 +30,46 @@ public class TaskController {
         return ResponseEntity.status(HttpStatus.CREATED).body(taskService.registerTask(task)); 
     }
 
-    @GetMapping({"/list"})
-    public ResponseEntity<List<Task>> listRegisteredTasks() {
-        return ResponseEntity.ok().body(taskService.listTasks());
-    }
-
-    @GetMapping({"/listPageable"})
-    public ResponseEntity<Page<Task>> listRegisteredTasksByPagination(Pageable pageable) {
-        return ResponseEntity.ok().body(taskService.listTasks(pageable));
-    }
-
-    @GetMapping({"/{userId}/ tasks"})
-    public ResponseEntity<List<Task>> listTaskByUserId(@PathVariable Long userId) {
-        List<Task> tasks = taskService.findTaskByUserId(userId);
-        return tasks != null ? ResponseEntity.ok(tasks) : ResponseEntity.notFound().build();
+    @GetMapping
+    public ResponseEntity<List<TaskDto>> listTasks() {
+        return ResponseEntity.status(HttpStatus.OK).body(taskService.listTasks());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Task> getTask(@PathVariable Long id) {
-        Optional<Task> task = taskService.findTasksById(id);
+    public ResponseEntity<TaskDto> consultTask(@PathVariable Long id) {
+        TaskDto task = taskService.findTasksById(id);
 
-        if (task.isEmpty()) {
-            return ResponseEntity.notFound().build();
+        if (Objects.isNull(task)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
-        return ResponseEntity.ok().body(task.get());
+        return ResponseEntity.status(HttpStatus.OK).body(task);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
-        Optional<Task> task = taskService.findTasksById(id);
+        TaskDto task = taskService.findTasksById(id);
 
-        if (task.isEmpty()) {
-            return ResponseEntity.notFound().build();
+        if (Objects.isNull(task)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
         taskService.deleteTask(id);
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Task> updateTask(@PathVariable Long id, @RequestBody Task task) {
+    public ResponseEntity<Task> updateTask(@PathVariable Long id, @RequestBody Task dataTask) {
 
-        Optional<Task> taskOpt = taskService.findTasksById(id);
+        TaskDto task = taskService.findTasksById(id);
 
-        if (taskOpt.isEmpty()) {
-            return ResponseEntity.notFound().build();
+        if (Objects.isNull(task)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
         task.setId(id);
 
-        return ResponseEntity.ok().body(taskService.registerTask(task));
+        return ResponseEntity.status(HttpStatus.OK).body(taskService.updateTask(id, dataTask));
     }
 }
